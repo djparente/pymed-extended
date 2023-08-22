@@ -1,6 +1,20 @@
 > This is a fork of gijswobben's excellent PyMed library. Please see https://github.com/gijswobben/pymed for the original repository. I have made small edits to it to enable additional handling of structured abstracts. Please feel free to continue extending this fork under the original MIT license.
 > - djparente@github
 
+# Changes from the original PyMed library
+The PyMed library has been extended. The main addition is the `getStructuredAbstractContent` method, which extracts structured abstract content from an XML element to provide a more extensive view of articles on PubMed. 
+
+The `query` method in the `api.py` file has been tweaked to accept an optional `reldate` parameter. This addition introduces flexibility in terms of seeking out recent articles based on publication date.
+
+In the `article.py` file, a `structuredAbstract` attribute is now included in the `PubMedArticle` class. This new attribute captures the structured abstract content of an article, giving users access to more in-depth information.
+
+The `helpers.py` file now incorporates a method that follows the same name as `getStructuredAbstractContent`. This enables users to draw out the text content of structured abstracts from an XML element. This novel feature enriches the library's ability to manage and retrieve structured abstracts in a user-centric way.
+
+The `README.md` file now indicates this PyMed library as a fork from the original work of gijswobben, acknowledging due credit.
+
+(This summary of changes was created programatically by gpt-3.5-turbo-16k and gpt-4 with modifications by author for accuracy)
+
+
 # PyMed - PubMed Access through Python
 PyMed is a Python library that provides access to PubMed through the PubMed API.
 
