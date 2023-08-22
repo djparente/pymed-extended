@@ -40,13 +40,13 @@ class PubMed(object):
         self.email = email
 
         # Keep track of the rate limit
-        self._rateLimit = 3
+        self._rateLimit = 2
         self._requestsMade = []
 
         # Define the standard / default query parameters
         self.parameters = {"tool": tool, "email": email, "db": "pubmed"}
 
-    def query(self: object, query: str, max_results: int = 100):
+    def query(self: object, query: str, max_results: int = 100, reldate : int = None):
         """ Method that executes a query agains the GraphQL schema, automatically
             inserting the PubMed data loader.
 
@@ -59,7 +59,7 @@ class PubMed(object):
         """
 
         # Retrieve the article IDs for the query
-        article_ids = self._getArticleIds(query=query, max_results=max_results)
+        article_ids = self._getArticleIds(query=query, max_results=max_results, reldate=reldate)
 
         # Get the articles themselves
         articles = list(
@@ -138,6 +138,7 @@ class PubMed(object):
 
         # Make the request to PubMed
         response = requests.get(f"{BASE_URL}{url}", params=parameters)
+        print(response.request.url)
 
         # Check for any errors
         response.raise_for_status()
@@ -179,7 +180,7 @@ class PubMed(object):
         for book in root.iter("PubmedBookArticle"):
             yield PubMedBookArticle(xml_element=book)
 
-    def _getArticleIds(self: object, query: str, max_results: int) -> list:
+    def _getArticleIds(self: object, query: str, max_results: int, reldate : int = None) -> list:
         """ Helper method to retrieve the article IDs for a query.
 
             Parameters:
@@ -199,6 +200,8 @@ class PubMed(object):
         # Add specific query parameters
         parameters["term"] = query
         parameters["retmax"] = 50000
+        if reldate is not None:
+            parameters["reldate"] = reldate
 
         # Calculate a cut off point based on the max_results parameter
         if max_results < parameters["retmax"]:

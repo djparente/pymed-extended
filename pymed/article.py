@@ -5,7 +5,7 @@ from xml.etree.ElementTree import Element
 from typing import TypeVar
 from typing import Optional
 
-from .helpers import getContent
+from .helpers import getContent, getStructuredAbstractContent
 
 
 class PubMedArticle(object):
@@ -16,6 +16,7 @@ class PubMedArticle(object):
         "pubmed_id",
         "title",
         "abstract",
+        "structuredAbstract",
         "keywords",
         "journal",
         "publication_date",
@@ -47,8 +48,13 @@ class PubMedArticle(object):
                 self.__setattr__(field, kwargs.get(field, None))
 
     def _extractPubMedId(self: object, xml_element: TypeVar("Element")) -> str:
-        path = ".//ArticleId[@IdType='pubmed']"
-        return getContent(element=xml_element, path=path)
+        #path = ".//ArticleId[@IdType='pubmed']"
+        path = ".//PMID"
+        pmids = getContent(element=xml_element, path=path, separator="|")
+        if pmids is not None:
+            fields = pmids.split("|")
+            pmids = fields[0]
+        return pmids
 
     def _extractTitle(self: object, xml_element: TypeVar("Element")) -> str:
         path = ".//ArticleTitle"
@@ -68,6 +74,10 @@ class PubMedArticle(object):
         path = ".//AbstractText"
         return getContent(element=xml_element, path=path)
 
+    def _extractStructuredAbstract(self: object, xml_element: TypeVar("Element")) -> str:
+        path = ".//AbstractText"
+        return getStructuredAbstractContent(element=xml_element, path=path)
+
     def _extractConclusions(self: object, xml_element: TypeVar("Element")) -> str:
         path = ".//AbstractText[@Label='CONCLUSION']"
         return getContent(element=xml_element, path=path)
@@ -85,7 +95,7 @@ class PubMedArticle(object):
         return getContent(element=xml_element, path=path)
 
     def _extractDoi(self: object, xml_element: TypeVar("Element")) -> str:
-        path = ".//ArticleId[@IdType='doi']"
+        path = ".//ELocationID[@EIdType='doi']"
         return getContent(element=xml_element, path=path)
 
     def _extractPublicationDate(
@@ -131,6 +141,7 @@ class PubMedArticle(object):
         self.keywords = self._extractKeywords(xml_element)
         self.journal = self._extractJournal(xml_element)
         self.abstract = self._extractAbstract(xml_element)
+        self.structuredAbstract = self._extractStructuredAbstract(xml_element)
         self.conclusions = self._extractConclusions(xml_element)
         self.methods = self._extractMethods(xml_element)
         self.results = self._extractResults(xml_element)
