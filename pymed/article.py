@@ -71,11 +71,11 @@ class PubMedArticle(object):
         return getContent(element=xml_element, path=path)
 
     def _extractAbstract(self: object, xml_element: TypeVar("Element")) -> str:
-        path = ".//AbstractText"
+        path = ".//Abstract/AbstractText"
         return getContent(element=xml_element, path=path)
 
     def _extractStructuredAbstract(self: object, xml_element: TypeVar("Element")) -> str:
-        path = ".//AbstractText"
+        path = ".//Abstract/AbstractText"
         return getStructuredAbstractContent(element=xml_element, path=path)
 
     def _extractConclusions(self: object, xml_element: TypeVar("Element")) -> str:
